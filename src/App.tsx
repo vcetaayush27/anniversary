@@ -5,9 +5,60 @@
 
 import { useState, useEffect, ReactNode, useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'motion/react';
-import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart } from 'lucide-react';
+import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart, Languages } from 'lucide-react';
 
 // --- Types & Constants ---
+
+type Language = 'mr' | 'en';
+
+const TRANSLATIONS = {
+  mr: {
+    invocation: "|| श्री गणेशाय नम: ||",
+    family: "पाटील परिवार",
+    years: "वर्षे",
+    yearsTooltip: "25 वर्षे",
+    jubileeRibbon: "रौप्य महोत्सवी वर्ष",
+    jubileeTitle: "रौप्य महोत्सव",
+    invitationSubtitle: "निमंत्रण",
+    quote: "\"पती पत्नी मधील एकमेकांवर असणारे प्रेम, एकमेकावर असणारा विश्वास आणि आयुष्यात एकमेकांना दिलेली साथ... म्हणजे त्यांच्या लग्नाचा वाढदिवस, जो की आज आम्ही हा सुखी वैवाहिक जीवनाचा आनंदोत्सव साजरा करत आहोत..\"",
+    name1: "प्रतिमा",
+    name2: "हेमंत",
+    invitationText: "श्री.हेमंत व सौ.प्रतिमा यांच्या 25 व्या लग्नाचा वाढदिवस आम्ही साजरा करत आहोत. या आमच्या आनंदात सहभागी होण्यासाठी आम्ही आपणास निमंत्रित करीत आहोत. आमच्या आनंदात सहभागी होवुन आपण आमचा आनंद द्विगुणित करावा हीच नम्र विनंती...",
+    labelDate: "दिनांक",
+    labelTime: "कार्यक्रमाची वेळ",
+    labelFood: "जेवणाची वेळ",
+    labelVenue: "स्थळ",
+    valDate: "१३/०५/२०२६, बुधवार",
+    valTime: "संध्याकाळी ६:०० वा.",
+    valFood: "संध्याकाळी ७:०० वा. ते आपल्या आगमनापर्यंत",
+    valVenue: "३०/२, मिलनद्वीप, शास्त्री नगर, जळगाव",
+    footerMessage: "\"आपली उपस्थिती हीच आमच्यासाठी सर्वात मोठी भेट आहे.\"",
+    footerBlessings: "आपल्या शुभ आशीर्वादाची सदैव अपेक्षा !",
+  },
+  en: {
+    invocation: "|| Shree Ganeshay Namah ||",
+    family: "Patil Family",
+    years: "YEARS",
+    yearsTooltip: "25 Years",
+    jubileeRibbon: "Silver Jubilee Year",
+    jubileeTitle: "Silver Jubilee",
+    invitationSubtitle: "Invitation",
+    quote: "\"The love between a husband and wife, the trust in each other, and the support given throughout life... that is their wedding anniversary, which we are celebrating today as a joy of happy married life..\"",
+    name1: "Pratima",
+    name2: "Hemant",
+    invitationText: "We are celebrating the 25th wedding anniversary of Mr. Hemant and Mrs. Pratima. We cordially invite you to join us in this celebration. We humbly request you to double our joy by your presence...",
+    labelDate: "Date",
+    labelTime: "Event Time",
+    labelFood: "Dinner Time",
+    labelVenue: "Venue",
+    valDate: "13/05/2026, Wednesday",
+    valTime: "6:00 PM Onwards",
+    valFood: "7:00 PM until your arrival",
+    valVenue: "30/2, Milandeep, Shastri Nagar, Jalgaon",
+    footerMessage: "\"Your presence is the greatest gift for us.\"",
+    footerBlessings: "Looking forward to your blessings always!",
+  }
+};
 
 interface HeartData {
   id: number;
@@ -258,11 +309,13 @@ const ScrollProgress = () => {
   );
 };
 
-const Badge25 = () => {
+const Badge25 = ({ lang }: { lang: Language }) => {
   const [isFilled, setIsFilled] = useState(false);
   const [isRibbonVisible, setIsRibbonVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const textPathRef = useRef<SVGTextElement>(null);
+
+  const t = TRANSLATIONS[lang];
 
   useEffect(() => {
     const timerFill = setTimeout(() => setIsFilled(true), 2500);
@@ -306,9 +359,9 @@ const Badge25 = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute -top-16 px-6 py-2 bg-gold/5 glass rounded-2xl text-[var(--text-secondary)] font-cursive text-5xl whitespace-nowrap z-50 border border-gold/10 shadow-2xl"
+            className={`absolute -top-16 px-6 py-2 bg-gold/5 glass rounded-2xl text-[var(--text-secondary)] ${lang === 'mr' ? 'font-marathi-display text-4xl' : 'font-cursive text-5xl'} whitespace-nowrap z-50 border border-gold/10 shadow-2xl`}
           >
-            25 Years
+            {t.yearsTooltip}
           </motion.div>
         )}
       </AnimatePresence>
@@ -370,9 +423,9 @@ const Badge25 = () => {
             x="50%"
             y="82%"
             textAnchor="middle"
-            className="font-serif font-bold text-[16px] tracking-[0.35em] fill-gold/90"
+            className={`${lang === 'mr' ? 'font-marathi-display text-[22px]' : 'font-serif text-[16px]'} font-bold tracking-[0.35em] fill-gold/90`}
           >
-            YEARS
+            {t.years}
           </text>
         </svg>
 
@@ -400,8 +453,8 @@ const Badge25 = () => {
           background: 'linear-gradient(90deg, transparent, #5c1a2a 15%, #5c1a2a 85%, transparent)' 
         }}
       >
-        <span className="font-marathi-display text-base tracking-[0.1em] text-[var(--text-primary)]">
-          रौप्य महोत्सवी वर्ष
+        <span className={`${lang === 'mr' ? 'font-marathi-display' : 'font-serif font-bold'} text-base tracking-[0.1em] text-[var(--text-primary)]`}>
+          {t.jubileeRibbon}
         </span>
       </motion.div>
     </div>
@@ -447,10 +500,15 @@ const Divider = () => (
 
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [lang, setLang] = useState<Language>('mr');
+
+  const t = TRANSLATIONS[lang];
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'dark';
+    const savedLang = localStorage.getItem('lang') as Language || 'mr';
     setTheme(savedTheme);
+    setLang(savedLang);
     document.body.classList.add(savedTheme === 'dark' ? 'dark-mode' : 'light-mode');
     document.body.classList.remove(savedTheme === 'dark' ? 'light-mode' : 'dark-mode');
 
@@ -527,14 +585,21 @@ export default function App() {
     document.body.classList.remove(newTheme === 'dark' ? 'light-mode' : 'dark-mode');
   };
 
-  const nameStyles = "text-[clamp(2.8rem,7vw,5rem)] font-sans font-bold name-gradient relative inline-block animate-[floatName_2.5s_ease-in-out_infinite_alternate] transition-transform duration-400 hover:scale-[1.08] cursor-none interactive";
+  const toggleLang = () => {
+    const newLang = lang === 'mr' ? 'en' : 'mr';
+    setLang(newLang);
+    localStorage.setItem('lang', newLang);
+  };
+
+  const nameStyles = `text-[clamp(2.8rem,7vw,5rem)] ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold name-gradient relative inline-block animate-[floatName_2.5s_ease-in-out_infinite_alternate] transition-transform duration-400 hover:scale-[1.08] cursor-none interactive`;
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
       <img 
         id="couple-bg-img"
-        src="https://github.com/vcetaayush27/anniversary/blob/f9044ce17a21be0eee4111c26ce081fc9e776333/couple.png"
-        alt="couple.png"
+        src="https://drive.google.com/uc?export=view&id=11dGQ0qZqMLGFmgYB4ahp2tI3A3puZneI"
+        alt=""
+        crossOrigin="anonymous"
         onLoad={() => {
           // Additional safety if needed
         }}
@@ -554,6 +619,15 @@ export default function App() {
         {theme === 'light' ? <Moon className="text-maroon w-6 h-6" /> : <Sun className="text-[var(--text-secondary)] w-6 h-6" />}
       </button>
 
+      <button
+        onClick={toggleLang}
+        aria-label="Toggle language"
+        className="fixed top-20 right-4 z-50 px-4 py-2 rounded-full bg-[rgba(255,255,255,0.08)] glass hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg border border-[rgba(245,236,215,0.3)] text-[var(--text-primary)] font-bold text-xs tracking-wider flex items-center gap-2 interactive"
+      >
+        <Languages className="w-4 h-4 text-gold" />
+        {lang === 'mr' ? 'ENGLISH' : 'मराठी'}
+      </button>
+
       {/* Hero Section */}
       <div className="relative pt-24 pb-12">
         <motion.div
@@ -561,15 +635,15 @@ export default function App() {
            animate={{ opacity: 1, y: 0 }}
            className="text-center mb-8"
         >
-          <span className="font-marathi-display text-[var(--text-secondary)] text-xl tracking-[0.01em] block mb-4 shimmer-text">
-            || श्री गणेशाय नम: ||
+          <span className={`${lang === 'mr' ? 'font-marathi-display' : 'font-serif font-bold uppercase'} text-[var(--text-secondary)] text-xl tracking-[0.01em] block mb-4 shimmer-text`}>
+            {t.invocation}
           </span>
-          <div className="inline-block px-6 py-2 border border-[rgba(201,168,76,0.4)] rounded-full text-sm tracking-[0.01em] text-[var(--text-primary)] font-bold uppercase bg-[rgba(201,168,76,0.15)] glass">
-            पाटील परिवार
+          <div className={`inline-block px-6 py-2 border border-[rgba(201,168,76,0.4)] rounded-full text-sm tracking-[0.01em] text-[var(--text-primary)] font-bold uppercase bg-[rgba(201,168,76,0.15)] glass ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'}`}>
+            {t.family}
           </div>
         </motion.div>
 
-        <Badge25 />
+        <Badge25 lang={lang} />
 
         <motion.div 
           initial={{ opacity: 0 }}
@@ -577,18 +651,18 @@ export default function App() {
           transition={{ delay: 0.5 }}
           className="text-center mt-6"
         >
-          <h1 className="text-5xl md:text-7xl font-marathi-display font-bold text-[var(--text-primary)] mb-2 drop-shadow-sm">
-            रौप्य महोत्सव
+          <h1 className={`text-5xl md:text-7xl ${lang === 'mr' ? 'font-marathi-display' : 'font-playfair'} font-bold text-[var(--text-primary)] mb-2 drop-shadow-sm`}>
+            {t.jubileeTitle}
           </h1>
-          <p className="text-2xl md:text-3xl font-serif italic text-[var(--text-secondary)] tracking-widest">निमंत्रण</p>
+          <p className="text-2xl md:text-3xl font-serif italic text-[var(--text-secondary)] tracking-widest">{t.invitationSubtitle}</p>
         </motion.div>
       </div>
 
       {/* Quote Section */}
       <Section className="px-8">
         <Divider />
-        <p className="text-xl md:text-2xl font-marathi-display italic leading-relaxed text-[var(--text-body)]">
-          "पती पत्नी मधील एकमेकांवर असणारे प्रेम, एकमेकावर असणारा विश्वास आणि आयुष्यात एकमेकांना दिलेली साथ... म्हणजे त्यांच्या लग्नाचा वाढदिवस, जो की आज आम्ही हा सुखी वैवाहिक जीवनाचा आनंदोत्सव साजरा करत आहोत.."
+        <p className={`text-xl md:text-2xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} italic leading-relaxed text-[var(--text-body)]`}>
+          {t.quote}
         </p>
         <Divider />
       </Section>
@@ -598,7 +672,7 @@ export default function App() {
         <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20 relative z-[2]">
           <div className="relative">
             <span className={nameStyles}>
-              प्रतिमा
+              {t.name1}
             </span>
             <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold origin-left animate-[expandUnderline_1.2s_ease-out_forwards]" />
           </div>
@@ -607,7 +681,7 @@ export default function App() {
 
           <div className="relative">
             <span className={nameStyles} style={{ animationDelay: '1.25s' }}>
-              हेमंत
+              {t.name2}
             </span>
             <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold origin-left animate-[expandUnderline_1.2s_ease-out_forwards]" />
           </div>
@@ -616,10 +690,8 @@ export default function App() {
 
       {/* Invitation Text */}
       <Section>
-        <p className="text-xl md:text-2xl font-marathi-display leading-[2] text-[var(--text-body)] px-4">
-          श्री.हेमंत व सौ.प्रतिमा यांच्या 25 व्या लग्नाचा वाढदिवस आम्ही साजरा करत आहोत. 
-          या आमच्या आनंदात सहभागी होण्यासाठी आम्ही आपणास निमंत्रित करीत आहोत. 
-          आमच्या आनंदात सहभागी होवुन आपण आमचा आनंद द्विगुणित करावा हीच नम्र विनंती...
+        <p className={`text-xl md:text-2xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} leading-[2] text-[var(--text-body)] px-4`}>
+          {t.invitationText}
         </p>
       </Section>
 
@@ -634,8 +706,8 @@ export default function App() {
                 <Calendar className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">दिनांक</p>
-                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)]">१३/०५/२०२६, बुधवार</p>
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">{t.labelDate}</p>
+                <p className={`text-xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold text-[var(--text-primary)]`}>{t.valDate}</p>
               </div>
             </div>
 
@@ -644,8 +716,8 @@ export default function App() {
                 <Clock className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">कार्यक्रमाची वेळ</p>
-                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)]">संध्याकाळी ६:०० वा.</p>
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">{t.labelTime}</p>
+                <p className={`text-xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold text-[var(--text-primary)]`}>{t.valTime}</p>
               </div>
             </div>
           </div>
@@ -656,8 +728,8 @@ export default function App() {
                 <Utensils className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">जेवणाची वेळ</p>
-                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)]">संध्याकाळी ७:०० वा. ते आपल्या आगमनापर्यंत</p>
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">{t.labelFood}</p>
+                <p className={`text-xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold text-[var(--text-primary)]`}>{t.valFood}</p>
               </div>
             </div>
 
@@ -666,9 +738,9 @@ export default function App() {
                 <MapPin className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">स्थळ</p>
-                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)] leading-relaxed">
-                  ३०/२, मिलनद्वीप, शास्त्री नगर, जळगाव
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">{t.labelVenue}</p>
+                <p className={`text-xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold text-[var(--text-primary)] leading-relaxed`}>
+                  {t.valVenue}
                 </p>
               </div>
             </div>
@@ -680,11 +752,11 @@ export default function App() {
       <footer className="py-24 md:py-32 text-center px-8 relative overflow-hidden z-10">
         <div className="max-w-2xl mx-auto space-y-8 relative z-10">
           <Divider />
-          <h2 className="text-3xl md:text-4xl font-marathi-display font-bold shimmer-text px-4 leading-relaxed text-[var(--text-primary)]">
-            "आपली उपस्थिती हीच आमच्यासाठी सर्वात मोठी भेट आहे."
+          <h2 className={`text-3xl md:text-4xl ${lang === 'mr' ? 'font-marathi-display' : 'font-playfair'} font-bold shimmer-text px-4 leading-relaxed text-[var(--text-primary)]`}>
+            {t.footerMessage}
           </h2>
-          <p className="text-2xl font-marathi-display text-[var(--text-secondary)] font-bold italic tracking-wide">
-            आपल्या शुभ आशीर्वादाची सदैव अपेक्षा !
+          <p className={`text-2xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} text-[var(--text-secondary)] font-bold italic tracking-wide`}>
+            {t.footerBlessings}
           </p>
           <div className="pt-12 opacity-30 flex justify-center gap-12">
              <div className="floral-accent scale-110" />
