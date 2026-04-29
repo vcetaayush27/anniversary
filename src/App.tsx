@@ -5,7 +5,7 @@
 
 import { useState, useEffect, ReactNode, useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'motion/react';
-import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart, Languages, X } from 'lucide-react';
+import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart, Languages, X, Volume2, VolumeX } from 'lucide-react';
 
 // --- Types & Constants ---
 
@@ -506,8 +506,44 @@ export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [lang, setLang] = useState<Language>('mr');
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const t = TRANSLATIONS[lang];
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  useEffect(() => {
+    const targetDate = new Date('2026-05-13T18:00:00').getTime();
+    
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+      
+      if (diff > 0) {
+        setTimeLeft({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((diff % (1000 * 60)) / 1000),
+        });
+      }
+    };
+    
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'dark';
@@ -543,8 +579,8 @@ export default function App() {
       const progress = scrollY / docHeight;
       const isLight = document.body.classList.contains('light-mode');
       
-      const maxOpacity = isLight ? 0.18 : 0.28;
-      let targetOpacity = 0;
+      const maxOpacity = isLight ? 0.25 : 0.35;
+      let targetOpacity = 0.15;
 
       if (progress < 0.08) {
         targetOpacity = 0;
@@ -602,11 +638,13 @@ export default function App() {
     <div className="min-h-screen relative overflow-x-hidden">
       <img 
         id="couple-bg-img"
-        src="https://drive.google.com/uc?export=view&id=11dGQ0qZqMLGFmgYB4ahp2tI3A3puZneI"
-        alt=""
+        src="./couple.png"
+        alt="Couple"
         crossOrigin="anonymous"
-        onLoad={() => {
-          // Additional safety if needed
+        className="fixed inset-0 w-full h-full object-cover pointer-events-none z-0"
+        style={{ opacity: 0.15, mixBlendMode: 'multiply' }}
+        onLoad={(e) => {
+          (e.target as HTMLImageElement).style.opacity = '0.15';
         }}
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = 'none';
@@ -632,6 +670,21 @@ export default function App() {
         <Languages className="w-4 h-4 text-gold" />
         {lang === 'mr' ? 'ENGLISH' : 'मराठी'}
       </button>
+
+      <button
+        onClick={toggleMusic}
+        aria-label="Toggle music"
+        className="fixed top-36 right-4 z-50 p-3 rounded-full bg-[rgba(255,255,255,0.08)] glass hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg border border-[rgba(245,236,215,0.3)] text-[var(--text-primary)] interactive"
+      >
+        {isPlaying ? <Volume2 className="w-5 h-5 text-gold" /> : <VolumeX className="w-5 h-5 text-[var(--text-secondary)]" />}
+      </button>
+
+      <audio
+        ref={audioRef}
+        src="./backgroundmusic.mp3"
+        loop
+        onEnded={() => setIsPlaying(false)}
+      />
 
       {/* Hero Section */}
       <div className="relative pt-24 pb-12">
@@ -672,8 +725,59 @@ export default function App() {
         <Divider />
       </Section>
 
+      {/* Countdown Timer */}
+      <Section className="py-8">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="glass rounded-[30px] p-6 md:p-8 relative overflow-hidden"
+        >
+          <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-gold/5 rounded-full blur-[80px] pointer-events-none" />
+          
+          <div className="relative z-10">
+            <div className={`text-center mb-6 ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'}`}>
+              <span className={`text-xs tracking-[0.3em] uppercase text-[var(--text-secondary)] font-bold`}>
+                {lang === 'mr' ? 'लग्नाचा वाढदिवस' : 'Silver Jubilee'}
+              </span>
+              <h3 className={`text-lg md:text-xl mt-1 text-[var(--text-primary)] font-bold shimmer-text`}>
+                13 मे 2026 | 13 May 2026
+              </h3>
+            </div>
+            
+            <div className="flex justify-center gap-3 md:gap-5">
+              {[
+                { value: timeLeft.days, label: lang === 'mr' ? 'दिवस' : 'Days', key: 'days' },
+                { value: timeLeft.hours, label: lang === 'mr' ? 'तास' : 'Hours', key: 'hours' },
+                { value: timeLeft.minutes, label: lang === 'mr' ? 'मिनिटे' : 'Min', key: 'minutes' },
+                { value: timeLeft.seconds, label: lang === 'mr' ? 'सेकंद' : 'Sec', key: 'seconds' },
+              ].map((item, i) => (
+                <motion.div 
+                  key={item.key}
+                  initial={{ y: 20, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="flex flex-col items-center"
+                >
+                  <div className="relative">
+                    <div className={`text-4xl md:text-5xl font-bold name-gradient ${lang === 'mr' ? 'font-marathi-display' : 'font-playfair'}`}>
+                      {String(item.value).padStart(2, '0')}
+                    </div>
+                  </div>
+                  <div className={`mt-2 text-[10px] md:text-xs tracking-[0.15em] uppercase text-[var(--text-muted)] ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'}`}>
+                    {item.label}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </Section>
+
       {/* Names Section */}
-      <Section id="names-section" className="py-32 md:py-48 relative overflow-hidden">
+      <Section id="names-section" className="py-16 md:py-24 relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20 relative z-[2]">
           <div className="relative">
             <span className={nameStyles}>
@@ -764,7 +868,40 @@ export default function App() {
             {t.footerBlessings}
           </p>
 
-          <div className="pt-24 pb-16">
+          <div className="pt-20 pb-8">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="glass rounded-[20px] p-4 md:p-6 mb-6 inline-block"
+            >
+              <div className={`text-[10px] md:text-xs tracking-[0.2em] font-serif uppercase text-[var(--text-muted)] mb-3 text-center ${lang === 'mr' ? 'font-marathi-display tracking-normal' : ''}`}>
+                {lang === 'mr' ? 'उत्सव लागे' : 'Celebration Soon'}
+              </div>
+              <div className="flex justify-center gap-3 md:gap-6">
+                {[
+                  { value: timeLeft.days, label: lang === 'mr' ? 'दिवस' : 'Days' },
+                  { value: timeLeft.hours, label: lang === 'mr' ? 'तास' : 'Hrs' },
+                  { value: timeLeft.minutes, label: lang === 'mr' ? 'मिनिटे' : 'Min' },
+                  { value: timeLeft.seconds, label: lang === 'mr' ? 'सेकंद' : 'Sec' },
+                ].map((item, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ scale: 0.8 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className={`text-3xl md:text-4xl font-bold name-gradient ${lang === 'mr' ? 'font-marathi-display' : 'font-playfair'}`}>
+                      {String(item.value).padStart(2, '0')}
+                    </div>
+                    <div className={`text-[9px] md:text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-1`}>{item.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
             <div className={`text-sm tracking-[0.7em] font-serif uppercase text-[var(--text-muted)] mb-6 ${lang === 'mr' ? 'font-marathi-display tracking-normal' : ''}`}>
               {t.warmInvitation}
             </div>
@@ -820,7 +957,7 @@ export default function App() {
                 <X className="w-5 h-5" />
               </button>
               <img
-                src="https://raw.githubusercontent.com/vcetaayush27/anniversary/c17daec080b963b2528b330457cc70f9d5debae9/invite.png"
+                src="https://raw.githubusercontent.com/vcetaayush27/Invitation/81fa4468d8be190181fb1b8e80c982cf4aab6826/invite.png"
                 alt="Invitation"
                 className="w-full h-auto rounded-2xl shadow-2xl border-2 border-gold/20"
               />
@@ -831,4 +968,3 @@ export default function App() {
     </div>
   );
 }
-
