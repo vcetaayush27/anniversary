@@ -5,7 +5,7 @@
 
 import { useState, useEffect, ReactNode, useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'motion/react';
-import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart, Languages, X } from 'lucide-react';
+import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart, Languages } from 'lucide-react';
 
 // --- Types & Constants ---
 
@@ -34,8 +34,6 @@ const TRANSLATIONS = {
     valVenue: "३०/२, मिलनद्वीप, शास्त्री नगर, जळगाव",
     footerMessage: "\"आपली उपस्थिती हीच आमच्यासाठी सर्वात मोठी भेट आहे.\"",
     footerBlessings: "आपल्या शुभ आशीर्वादाची सदैव अपेक्षा !",
-    warmInvitation: "सप्रेम निमंत्रक:",
-    inviters: "विजय पाटील आणि आयुष पाटील",
   },
   en: {
     invocation: "|| Shree Ganeshay Namah ||",
@@ -56,11 +54,9 @@ const TRANSLATIONS = {
     valDate: "13/05/2026, Wednesday",
     valTime: "6:00 PM Onwards",
     valFood: "7:00 PM until your arrival",
-    valVenue: "30/2, Milandeep, Shastri Nagar, Jalgaon",
+    valVenue: "30/2, Milandweep, Shastri Nagar, Jalgaon",
     footerMessage: "\"Your presence is the greatest gift for us.\"",
     footerBlessings: "Looking forward to your blessings always!",
-    warmInvitation: "Warmly Invited By:",
-    inviters: "Vijay Patil & Aayush Patil",
   }
 };
 
@@ -505,7 +501,6 @@ const Divider = () => (
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [lang, setLang] = useState<Language>('mr');
-  const [showInviteModal, setShowInviteModal] = useState(false);
 
   const t = TRANSLATIONS[lang];
 
@@ -763,25 +758,6 @@ export default function App() {
           <p className={`text-2xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} text-[var(--text-secondary)] font-bold italic tracking-wide`}>
             {t.footerBlessings}
           </p>
-          
-          <div className="pt-16 pb-8">
-            <div className={`text-sm tracking-[0.2em] font-serif uppercase text-[var(--text-muted)] mb-3 ${lang === 'mr' ? 'font-marathi-display tracking-normal' : ''}`}>
-              {t.warmInvitation}
-            </div>
-            <div className={`text-3xl ${lang === 'mr' ? 'font-marathi-display' : 'font-cursive text-4xl'} text-[var(--text-primary)] name-gradient inline-block`}>
-              {t.inviters}
-            </div>
-          </div>
-
-          <motion.button
-            onClick={() => setShowInviteModal(true)}
-            className={`mt-8 px-8 py-3 rounded-full bg-gold/20 hover:bg-gold/30 border border-gold/40 text-[var(--text-primary)] font-bold text-lg tracking-wide glass interactive ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'}`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {lang === 'mr' ? 'निमंत्रण - इथे क्लिक करा' : 'Invitation - Click Here'}
-          </motion.button>
-
           <div className="pt-12 opacity-30 flex justify-center gap-12">
              <div className="floral-accent scale-110" />
              <div className="floral-accent scale-110 rotate-180" />
@@ -795,40 +771,6 @@ export default function App() {
 
       {/* Extra spacing */}
       <div className="h-24" />
-
-      <AnimatePresence>
-        {showInviteModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-            onClick={() => setShowInviteModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="relative max-w-4xl w-full max-h-[90vh] overflow-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowInviteModal(false)}
-                className="absolute -top-2 -right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white shadow-lg border border-gold/30 text-maroon hover:scale-110 active:scale-95 transition-all duration-300"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <img
-                src="./invite.png"
-                alt="Invitation"
-                className="w-full h-auto rounded-2xl shadow-2xl border-2 border-gold/20"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
-  )
+  );
 }
-
