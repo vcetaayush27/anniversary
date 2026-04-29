@@ -681,7 +681,7 @@ export default function App() {
 
       <audio
         ref={audioRef}
-        src="https://github.com/vcetaayush27/anniversary/blob/10ccfb6fd521c783d86bdbbad4342df004b1cc5f/backgroundmusic.mp3"
+        src="https://raw.githubusercontent.com/vcetaayush27/anniversary/10ccfb6fd521c783d86bdbbad4342df004b1cc5f/backgroundmusic.mp3"
         loop
         onEnded={() => setIsPlaying(false)}
       />
