@@ -764,11 +764,11 @@ export default function App() {
             {t.footerBlessings}
           </p>
 
-          <div className="pt-16 pb-8">
-            <div className={`text-sm tracking-[0.2em] font-serif uppercase text-[var(--text-muted)] mb-3 ${lang === 'mr' ? 'font-marathi-display tracking-normal' : ''}`}>
+          <div className="pt-24 pb-16">
+            <div className={`text-sm tracking-[0.7em] font-serif uppercase text-[var(--text-muted)] mb-6 ${lang === 'mr' ? 'font-marathi-display tracking-normal' : ''}`}>
               {t.warmInvitation}
             </div>
-            <div className={`text-3xl ${lang === 'mr' ? 'font-marathi-display' : 'font-cursive text-4xl'} text-[var(--text-primary)] name-gradient inline-block`}>
+            <div className={`text-5xl ${lang === 'mr' ? 'font-marathi-display' : 'font-cursive text-6xl'} text-[var(--text-primary)] name-gradient inline-block`}>
               {t.inviters}
             </div>
           </div>
