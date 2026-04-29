@@ -60,7 +60,7 @@ const TRANSLATIONS = {
     footerMessage: "\"Your presence is the greatest gift for us.\"",
     footerBlessings: "Looking forward to your blessings always!",
     warmInvitation: "Warmly Invited By:",
-    inviters: "Vijay Patil & Aayush Patil",
+    inviters: "Vijay Patil   &   Aayush Patil",
   }
 };
 
