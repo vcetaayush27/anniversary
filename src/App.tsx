@@ -491,7 +491,7 @@ const Section = ({ children, className = "", parallax = 0.4, id }: { children: R
 const Divider = () => (
   <div className="flex items-center justify-center gap-4 my-8 opacity-40">
     <div className="h-[1px] w-20 bg-gold" />
-    <Heart className="w-5 h-5 text-maroon fill-maroon animate-[heartbeat_0.9s_infinite]" />
+    <Heart className="w-5 h-5 text-[var(--text-accent)] fill-[var(--text-accent)] animate-[heartbeat_0.9s_infinite]" />
     <div className="h-[1px] w-20 bg-gold" />
   </div>
 );
@@ -677,7 +677,7 @@ export default function App() {
             <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold origin-left animate-[expandUnderline_1.2s_ease-out_forwards]" />
           </div>
 
-          <Heart className="w-10 h-10 text-maroon fill-maroon animate-[heartbeat_0.9s_infinite] shadow-lg" />
+          <Heart className="w-12 h-12 flex-shrink-0 text-[var(--text-accent)] fill-[var(--text-accent)] animate-[heartbeat_0.9s_infinite] drop-shadow-[0_0_12px_rgba(255,155,181,0.4)] interactive" />
 
           <div className="relative">
             <span className={nameStyles} style={{ animationDelay: '1.25s' }}>
