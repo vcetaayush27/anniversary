@@ -1,0 +1,423 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Serif Devanagari", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  --font-playfair: "Playfair Display", serif;
+  --font-cursive: "Great Vibes", cursive;
+  --font-marathi-display: "Tiro Devanagari Marathi", serif;
+  
+  --color-gold: #C9A84C;
+  --color-silver: #C0C0C0;
+  --color-dusty-rose: #D4A5A5;
+  --color-maroon: #6B2737;
+}
+
+:root {
+  --bg-primary: #fffaf5;
+  --text-primary: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --text-body: #4A4A4A;
+  --text-accent: #D4547A;
+  --text-muted: #7A7A7A;
+  --card-bg: rgba(255, 255, 255, 0.82);
+  --accent-gold: #C9A84C;
+  --accent-silver: #C0C0C0;
+  --transition-speed: 0.4s;
+  --ring-size: 36px;
+  --badge-bg: radial-gradient(circle at 40% 35%, #fff9f0 0%, #f5e6c8 60%, #ede0c8 100%);
+}
+
+body.dark-mode {
+  --bg-primary: #0a0705;
+  --text-primary: #F5ECD7;   /* warm cream — main headings */
+  --text-secondary: #E8C96A; /* champagne gold — subheadings, labels */
+  --text-body: #D4C5A9;      /* muted warm white — body paragraphs */
+  --text-accent: #FF9BB5;    /* soft rose — highlighted words */
+  --text-muted: #A09080;     /* dimmed — hints, captions */
+  --card-bg: rgba(20, 15, 12, 0.85);
+  --accent-gold: #D4AF37;
+  --accent-silver: #A8A8B3;
+  --badge-bg: radial-gradient(circle at 40% 35%, #2a1f0e 0%, #0f0a05 60%, #000000 100%);
+}
+
+body {
+  background: linear-gradient(160deg, #fffaf5 0%, #fff5ee 40%, #fdf0f5 70%, #fffbf0 100%);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+body.dark-mode p,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode span,
+body.dark-mode div,
+body.dark-mode label {
+  color: inherit;
+  opacity: 1 !important;
+}
+
+body.dark-mode h1 {
+  text-shadow: 0 0 40px rgba(201,168,76,0.4);
+}
+
+#couple-photo {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(280px, 55%, 520px);
+  max-height: 90%;
+  object-fit: contain;
+  object-position: top center;
+  mix-blend-mode: screen;
+  opacity: 0;
+  filter: brightness(0.85) contrast(1.05) saturate(0.9);
+  transition: opacity 1.2s ease, filter 1.2s ease;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+@media (max-width: 600px) {
+  #couple-photo {
+    width: 90%;
+    bottom: -10px;
+  }
+}
+
+#couple-bg-img {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: luminosity;
+  filter: sepia(0.3) saturate(0.6) brightness(0.45);
+  transition: opacity 1.2s ease;
+  will-change: opacity;
+}
+
+/* Ensure content is above the background watermark */
+#root > div {
+  position: relative;
+  z-index: 10;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+  a, button, .interactive { cursor: none; }
+}
+
+/* Animations */
+@keyframes fallHeart {
+  0%   { transform: rotate(-45deg) translateY(-120px) translateX(0px); }
+  25%  { transform: rotate(-45deg) translateY(25vh)   translateX(18px); }
+  50%  { transform: rotate(-45deg) translateY(50vh)   translateX(-12px); }
+  75%  { transform: rotate(-45deg) translateY(75vh)   translateX(20px); }
+  100% { transform: rotate(-45deg) translateY(110vh)  translateX(-8px); opacity: 0; }
+}
+
+@keyframes orbFloat {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(var(--orb-x, 30px), var(--orb-y, 40px)); }
+}
+
+@keyframes titleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes nameShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes floatName {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-8px); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+@keyframes rotateRing {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinRing {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes ringSwing {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(8deg); }
+}
+
+@keyframes ringGlow {
+  0% { box-shadow: 0 0 0px transparent; }
+  100% { box-shadow: 0 0 10px rgba(201,168,76,0.6); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes starPulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes heartTrail {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+}
+
+@keyframes touchRipple {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 80px; height: 80px; opacity: 0; }
+}
+
+@keyframes expandUnderline {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+/* UI Elements */
+.falling-heart {
+  position: fixed;
+  width: var(--size);
+  height: var(--size);
+  transform: rotate(-45deg);
+  background: var(--color);
+  opacity: var(--opacity);
+  pointer-events: none;
+  z-index: 0;
+  animation: fallHeart var(--duration) var(--delay) linear infinite;
+}
+
+.falling-heart::before,
+.falling-heart::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.falling-heart::before { top: -50%; left: 0; }
+.falling-heart::after  { left: 50%; top: 0; }
+
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(80px);
+  animation: orbFloat ease-in-out infinite alternate;
+}
+
+.dark-mode .orb {
+  opacity: 1;
+}
+
+.light-mode .orb {
+  opacity: 0.5;
+}
+
+body {
+  background: linear-gradient(160deg, #fffaf5 0%, #fff5ee 40%, #fdf0f5 70%, #fffbf0 100%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 25%, rgba(212, 84, 122, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 70%, rgba(201, 168, 76, 0.15) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 15%, rgba(232, 201, 106, 0.10) 0%, transparent 40%),
+    radial-gradient(ellipse at 75% 85%, rgba(160, 51, 90, 0.10) 0%, transparent 35%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+body.dark-mode {
+  background: linear-gradient(160deg, #0a0508 0%, #120a0e 35%, #0d080b 60%, #0a0709 100%);
+}
+
+body.dark-mode::before {
+  background:
+    radial-gradient(ellipse at 15% 25%, rgba(160, 51, 90, 0.28) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 70%, rgba(123, 45, 139, 0.22) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(201, 168, 76, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 10%, rgba(212, 84, 122, 0.18) 0%, transparent 35%);
+}
+
+.light-mode .star {
+  display: none;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: starTwinkle infinite ease-in-out;
+}
+
+.sparkle-star {
+  clip-path: polygon(50% 0%, 55% 45%, 100% 50%, 55% 55%, 50% 100%, 45% 55%, 0% 50%, 45% 45%);
+}
+
+.name-gradient {
+  background: linear-gradient(120deg, #C9A84C, #E8D5A3, #C0C0C0, #E8D5A3, #C9A84C);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nameShimmer 3s ease-in-out infinite alternate;
+}
+
+.name-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  background: var(--color-gold);
+  animation: expandUnderline 1.2s ease-out forwards;
+}
+
+.badge-25-3d {
+  text-shadow: 
+    0 1px 0 #ccc, 
+    0 2px 0 #c9c9c9, 
+    0 3px 0 #bbb, 
+    0 4px 0 #b9b9b9, 
+    0 5px 0 #aaa,
+    0 6px 1px rgba(0,0,0,.1), 
+    0 0 5px rgba(0,0,0,.1), 
+    0 1px 3px rgba(0,0,0,.3), 
+    0 3px 5px rgba(0,0,0,.2), 
+    0 5px 10px rgba(0,0,0,.25), 
+    0 10px 10px rgba(0,0,0,.2), 
+    0 20px 20px rgba(0,0,0,.15);
+}
+
+.glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #C9A84C, #F5ECD7, #C9A84C);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nameShimmer 4s linear infinite;
+}
+
+#cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-gold);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out;
+}
+
+#cursor-ring {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--color-gold);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+
+.heart-particle {
+  position: fixed;
+  pointer-events: none;
+  color: #e0778a;
+  font-size: 14px;
+  z-index: 9997;
+  animation: heartTrail 0.8s ease-out forwards;
+}
+
+.ripple {
+  position: fixed;
+  border: 2px solid var(--color-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: touchRipple 0.6s ease-out forwards;
+}
+
+/* Corner Flowers (Simple CSS implementation) */
+.floral-corner {
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.18;
+}
+
+.flower-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: #f9c6cc;
+}
+
+.dark .flower-circle {
+  background: #6b1a2a;
+}
+
+/* Background Gradients */
+.bg-gold-dust::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(192,192,192,0.07) 0%, transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.dark .bg-gold-dust::before {
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(192,192,192,0.12) 0%, transparent 60%);
+}
+
+

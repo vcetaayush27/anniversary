@@ -1,0 +1,706 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState, useEffect, ReactNode, useRef } from 'react';
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'motion/react';
+import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart } from 'lucide-react';
+
+// --- Types & Constants ---
+
+interface HeartData {
+  id: number;
+  left: string;
+  size: string;
+  color: string;
+  opacity: number;
+  duration: string;
+  delay: string;
+  blur: string;
+}
+
+interface OrbData {
+  id: number;
+  size: string;
+  color: string;
+  top: string;
+  left: string;
+  duration: string;
+  delay: string;
+  x: string;
+  y: string;
+}
+
+interface StarData {
+  id: number;
+  left: string;
+  top: string;
+  delay: string;
+  duration: string;
+  color: string;
+}
+
+const HEART_COLORS = [
+  '#C9A84C', // antique gold
+  '#E8C96A', // champagne gold
+  '#D4547A', // deep rose
+  '#E8789A', // blush pink
+  '#A0335A', // burgundy rose
+  '#C0C0C0', // silver
+  '#E8D5A3', // cream gold
+  '#7B2D8B', // royal plum
+  '#FF6B9D', // romantic pink
+  '#B8860B', // dark goldenrod
+];
+
+const ORB_CONFIG = [
+  { size: '320px', color: 'rgba(160,51,90,0.18)',  top: '10%',  left: '5%'  },
+  { size: '280px', color: 'rgba(123,45,139,0.14)', top: '60%',  left: '75%' },
+  { size: '240px', color: 'rgba(201,168,76,0.12)', top: '80%',  left: '20%' },
+  { size: '200px', color: 'rgba(212,84,122,0.16)', top: '25%',  left: '80%' },
+  { size: '180px', color: 'rgba(184,134,11,0.10)', top: '45%',  left: '45%' },
+  { size: '260px', color: 'rgba(255,107,157,0.12)',top: '5%',   left: '50%' },
+];
+
+// --- Components ---
+
+const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
+  const [hearts, setHearts] = useState<HeartData[]>([]);
+  const [stars, setStars] = useState<StarData[]>([]);
+  const [orbs, setOrbs] = useState<OrbData[]>([]);
+
+  useEffect(() => {
+    // Generate Hearts
+    const newHearts = Array.from({ length: 20 }).map((_, i) => {
+      const topPos = Math.random() * 100;
+      const isDepthLayer = topPos < 30;
+      return {
+        id: i,
+        left: `${Math.random() * 100}%`,
+        size: isDepthLayer ? `${8 + Math.random() * 8}px` : `${10 + Math.random() * 22}px`,
+        color: HEART_COLORS[Math.floor(Math.random() * HEART_COLORS.length)],
+        opacity: isDepthLayer ? 0.1 + Math.random() * 0.15 : 0.15 + Math.random() * 0.4,
+        duration: `${7 + Math.random() * 11}s`,
+        delay: `${-Math.random() * 12}s`, // Negative delay for staggered start
+        blur: Math.random() > 0.7 ? `${Math.random() * 1.5}px` : '0px',
+      };
+    });
+    setHearts(newHearts);
+
+    // Generate Orbs
+    const newOrbs = ORB_CONFIG.map((conf, i) => ({
+      id: i,
+      ...conf,
+      duration: `${10 + Math.random() * 8}s`,
+      delay: `${Math.random() * -10}s`,
+      x: `${(Math.random() - 0.5) * 60}px`,
+      y: `${(Math.random() - 0.5) * 80}px`,
+    }));
+    setOrbs(newOrbs);
+
+    // Generate Stars (Dark Mode Only)
+    if (theme === 'dark') {
+      const newStars = Array.from({ length: 60 }).map((_, i) => {
+        const isColored = Math.random() > 0.85;
+        return {
+          id: i,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          delay: `${Math.random() * 4}s`,
+          duration: `${2 + Math.random() * 2}s`,
+          color: isColored ? (Math.random() > 0.5 ? '#C9A84C' : '#D4547A') : '#ffffff',
+        };
+      });
+      setStars(newStars);
+    } else {
+      setStars([]);
+    }
+  }, [theme]);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-[-2] overflow-hidden">
+      {/* Background orbs */}
+      {orbs.map((o) => (
+        <div
+          key={o.id}
+          className="orb"
+          style={{
+            width: o.size,
+            height: o.size,
+            backgroundColor: o.color,
+            top: o.top,
+            left: o.left,
+            animationDuration: o.duration,
+            animationDelay: o.delay,
+            '--orb-x': o.x,
+            '--orb-y': o.y,
+          } as any}
+        />
+      ))}
+
+      {stars.map((s) => (
+        <div
+          key={s.id}
+          className="star"
+          style={{
+            left: s.left,
+            top: s.top,
+            backgroundColor: s.color,
+            animationDelay: s.delay,
+            animationDuration: s.duration,
+            opacity: 0.4 + Math.random() * 0.4,
+          }}
+        />
+      ))}
+
+      {hearts.map((h) => (
+        <div
+          key={h.id}
+          className="falling-heart"
+          style={{
+            left: h.left,
+            '--size': h.size,
+            '--color': h.color,
+            '--opacity': h.opacity,
+            '--duration': h.duration,
+            '--delay': h.delay,
+            filter: h.blur !== '0px' ? `blur(${h.blur})` : undefined,
+          } as any}
+        />
+      ))}
+      
+      {/* Corner Accents */}
+      <div className="floral-corner top-0 left-0">
+        <div className="flower-circle w-20 h-20 top-0 left-0" />
+        <div className="flower-circle w-14 h-14 top-10 left-10 opacity-60" />
+      </div>
+      <div className="floral-corner top-0 right-0">
+        <div className="flower-circle w-24 h-24 top-[-20px] right-[-20px]" />
+      </div>
+      <div className="floral-corner bottom-0 left-0 scale-x-[-1]">
+        <div className="flower-circle w-24 h-24 bottom-[-20px] left-[-20px]" />
+      </div>
+      <div className="floral-corner bottom-0 right-0 scale-[-1]">
+        <div className="flower-circle w-24 h-24 bottom-[-20px] right-[-20px]" />
+      </div>
+    </div>
+  );
+};
+
+const CustomCursor = () => {
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<number>(null);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const ringPos = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const isMobile = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (isMobile) return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+      if (dotRef.current) {
+        dotRef.current.style.left = `${e.clientX}px`;
+        dotRef.current.style.top = `${e.clientY}px`;
+      }
+
+      // Heart trails
+      if (Math.random() > 0.85) {
+        const heart = document.createElement('div');
+        heart.innerHTML = '♥';
+        heart.className = 'heart-particle';
+        heart.style.left = `${e.clientX}px`;
+        heart.style.top = `${e.clientY}px`;
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 800);
+      }
+    };
+
+    const animate = () => {
+      const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
+      ringPos.current.x = lerp(ringPos.current.x, mousePos.current.x, 0.12);
+      ringPos.current.y = lerp(ringPos.current.y, mousePos.current.y, 0.12);
+
+      if (ringRef.current) {
+        ringRef.current.style.left = `${ringPos.current.x}px`;
+        ringRef.current.style.top = `${ringPos.current.y}px`;
+      }
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    requestRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
+
+  return (
+    <>
+      <div id="cursor-dot" ref={dotRef} className="hidden hover-pointer:block" />
+      <div id="cursor-ring" ref={ringRef} className="hidden hover-pointer:block" />
+    </>
+  );
+};
+
+const ScrollProgress = () => {
+  const { scrollYProgress } = useScroll();
+  const width = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  return (
+    <motion.div 
+      style={{ width }} 
+      className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-gold via-silver to-dusty-rose z-[100]" 
+    />
+  );
+};
+
+const Badge25 = () => {
+  const [isFilled, setIsFilled] = useState(false);
+  const [isRibbonVisible, setIsRibbonVisible] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const textPathRef = useRef<SVGTextElement>(null);
+
+  useEffect(() => {
+    const timerFill = setTimeout(() => setIsFilled(true), 2500);
+    const timerRibbon = setTimeout(() => setIsRibbonVisible(true), 3300);
+
+    if (textPathRef.current) {
+      const length = textPathRef.current.getComputedTextLength();
+      textPathRef.current.style.strokeDasharray = `${length}`;
+      textPathRef.current.style.strokeDashoffset = `${length}`;
+      
+      // Force reflow
+      textPathRef.current.getBoundingClientRect();
+      
+      textPathRef.current.style.transition = 'stroke-dashoffset 2.5s ease-in-out';
+      textPathRef.current.style.strokeDashoffset = '0';
+    }
+
+    return () => {
+      clearTimeout(timerFill);
+      clearTimeout(timerRibbon);
+    };
+  }, []);
+
+  const sparkles = Array.from({ length: 8 }).map((_, i) => ({
+    delay: `${i * 0.22}s`,
+    angle: i * 45,
+  }));
+
+  return (
+    <div 
+      className="relative flex flex-col items-center mb-24 interactive"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setIsHovered(false)}
+    >
+      {/* Tooltip */}
+      <AnimatePresence mode="wait">
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute -top-16 px-6 py-2 bg-gold/5 glass rounded-2xl text-[var(--text-secondary)] font-cursive text-5xl whitespace-nowrap z-50 border border-gold/10 shadow-2xl"
+          >
+            25 Years
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        animate={{ scale: isHovered ? 1.12 : 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20, mass: 1 }}
+        className="relative w-[clamp(260px,40vw,380px)] aspect-square flex items-center justify-center"
+      >
+        {/* Ring 1 (outermost) */}
+        <div className="absolute inset-0 border-[1.5px] border-gold/50 rounded-full" />
+        
+        {/* Ring 2 */}
+        <div className="absolute inset-[10px] border-[0.5px] border-silver/30 rounded-full" />
+        
+        {/* Ring 3 (animated) */}
+        <div 
+          className="absolute inset-[18px] border-[1.5px] border-transparent border-t-gold border-r-gold rounded-full"
+          style={{ 
+            animation: `spinRing ${isHovered ? '2s' : '8s'} linear infinite`
+          }}
+        />
+        
+        {/* Ring 4 (innermost) */}
+        <div className="absolute inset-[28px] border-[1px] border-gold/25 rounded-full" />
+
+        {/* Inner Fill Background */}
+        <div className="absolute inset-[29px] rounded-full" style={{ background: 'var(--badge-bg)' }} />
+
+        {/* Wedding Rings (UPSIDE) */}
+        <div className="absolute top-1/4 flex justify-center z-20 pointer-events-none">
+          <div className="w-8 h-8 rounded-full border-4 border-gold shadow-lg animate-[ringGlow_2s_ease-in-out_infinite_alternate]" />
+          <div className="w-8 h-8 rounded-full border-4 border-silver shadow-lg -ml-[14px] animate-[ringGlow_2s_ease-in-out_infinite_alternate_0.5s]" />
+        </div>
+
+        {/* 25 SVG Numeral */}
+        <svg 
+          viewBox="0 0 200 200" 
+          className="w-4/5 h-4/5 z-10 filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
+        >
+          <defs>
+            <linearGradient id="silverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e8e8e8" />
+              <stop offset="50%" stopColor="#a0a0a0" />
+              <stop offset="100%" stopColor="#d4d4d4" />
+            </linearGradient>
+          </defs>
+          <text
+            ref={textPathRef}
+            x="50%"
+            y="56%"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            className={`font-serif italic font-bold text-[clamp(5rem,12vw,8rem)] select-none transition-all duration-800 ${isFilled ? 'fill-[url(#silverGradient)] text-silver' : 'fill-none stroke-silver stroke-[2px]'}`}
+          >
+            25
+          </text>
+          <text
+            x="50%"
+            y="82%"
+            textAnchor="middle"
+            className="font-serif font-bold text-[16px] tracking-[0.35em] fill-gold/90"
+          >
+            YEARS
+          </text>
+        </svg>
+
+        {/* Sparkle Stars */}
+        {sparkles.map((s, i) => (
+          <div 
+            key={i}
+            className="absolute w-3 h-3 bg-gold sparkle-star animate-[starPulse_1.8s_infinite]"
+            style={{ 
+              animationDelay: s.delay,
+              top: '50%',
+              left: '50%',
+              transform: `rotate(${s.angle}deg) translateY(-145px)`
+            }}
+          />
+        ))}
+      </motion.div>
+
+      {/* Ribbon Banner */}
+      <motion.div
+        animate={{ opacity: isRibbonVisible ? 1 : 0 }}
+        transition={{ duration: 0.6 }}
+        className="mt-[-20px] px-12 py-3 relative z-30 flex items-center justify-center min-w-[280px] rounded-full overflow-hidden"
+        style={{ 
+          background: 'linear-gradient(90deg, transparent, #5c1a2a 15%, #5c1a2a 85%, transparent)' 
+        }}
+      >
+        <span className="font-marathi-display text-base tracking-[0.1em] text-[var(--text-primary)]">
+          रौप्य महोत्सवी वर्ष
+        </span>
+      </motion.div>
+    </div>
+  );
+};
+
+const Section = ({ children, className = "", parallax = 0.4, id }: { children: ReactNode; className?: string; parallax?: number; id?: string }) => {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], [0, parallax * 200]);
+  const springY = useSpring(y, { stiffness: 100, damping: 30 });
+
+  return (
+    <motion.section
+      id={id}
+      ref={ref}
+      initial={{ y: 40, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true, threshold: 0.2 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className={`py-12 px-6 max-w-[720px] mx-auto text-center relative z-10 ${className}`}
+    >
+      <motion.div style={{ y: springY }}>
+        {children}
+      </motion.div>
+    </motion.section>
+  );
+};
+
+const Divider = () => (
+  <div className="flex items-center justify-center gap-4 my-8 opacity-40">
+    <div className="h-[1px] w-20 bg-gold" />
+    <Heart className="w-5 h-5 text-maroon fill-maroon animate-[heartbeat_0.9s_infinite]" />
+    <div className="h-[1px] w-20 bg-gold" />
+  </div>
+);
+
+// --- Main App ---
+
+export default function App() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'dark';
+    setTheme(savedTheme);
+    document.body.classList.add(savedTheme === 'dark' ? 'dark-mode' : 'light-mode');
+    document.body.classList.remove(savedTheme === 'dark' ? 'light-mode' : 'dark-mode');
+
+    // Touch ripple handler
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      ripple.style.left = `${touch.clientX}px`;
+      ripple.style.top = `${touch.clientY}px`;
+      document.body.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    };
+
+    window.addEventListener('touchstart', onTouchStart);
+    return () => window.removeEventListener('touchstart', onTouchStart);
+  }, []);
+
+  // Couple Background Image Scroll & Theme Logic
+  useEffect(() => {
+    const coupleImg = document.getElementById('couple-bg-img') as HTMLImageElement;
+    if (!coupleImg) return;
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = scrollY / docHeight;
+      const isLight = document.body.classList.contains('light-mode');
+      
+      const maxOpacity = isLight ? 0.18 : 0.28;
+      let targetOpacity = 0;
+
+      if (progress < 0.08) {
+        targetOpacity = 0;
+      } else if (progress < 0.25) {
+        targetOpacity = ((progress - 0.08) / 0.17) * maxOpacity;
+      } else if (progress < 0.75) {
+        targetOpacity = maxOpacity;
+      } else if (progress < 0.92) {
+        targetOpacity = maxOpacity * (1 - ((progress - 0.75) / 0.17));
+      } else {
+        targetOpacity = 0;
+      }
+
+      coupleImg.style.opacity = targetOpacity.toString();
+    };
+
+    const updateFilter = () => {
+      const isDark = document.body.classList.contains('dark-mode');
+      if (isDark) {
+        coupleImg.style.filter = 'sepia(0.3) saturate(0.6) brightness(0.45)';
+        coupleImg.style.mixBlendMode = 'luminosity';
+      } else {
+        coupleImg.style.filter = 'sepia(0.2) saturate(0.5) brightness(0.75)';
+        coupleImg.style.mixBlendMode = 'multiply';
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    updateFilter(); // Initial state
+    
+    // Watch for theme changes via a simple polling or event if possible, 
+    // but we can also just rely on toggleTheme calling a function.
+    // For now, let's just run it whenever theme state changes by adding theme to dependency.
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.body.classList.add(newTheme === 'dark' ? 'dark-mode' : 'light-mode');
+    document.body.classList.remove(newTheme === 'dark' ? 'light-mode' : 'dark-mode');
+  };
+
+  const nameStyles = "text-[clamp(2.8rem,7vw,5rem)] font-sans font-bold name-gradient relative inline-block animate-[floatName_2.5s_ease-in-out_infinite_alternate] transition-transform duration-400 hover:scale-[1.08] cursor-none interactive";
+
+  return (
+    <div className="min-h-screen relative overflow-x-hidden">
+      <img 
+        id="couple-bg-img"
+        src="https://drive.google.com/uc?export=view&id=11dGQ0qZqMLGFmgYB4ahp2tI3A3puZneI"
+        alt=""
+        crossOrigin="anonymous"
+        onLoad={() => {
+          // Additional safety if needed
+        }}
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+      />
+      <BackgroundLayers theme={theme} />
+      <CustomCursor />
+      <ScrollProgress />
+      
+      <button
+        onClick={toggleTheme}
+        aria-label="Toggle dark mode"
+        className="fixed top-4 right-4 z-50 p-3 rounded-full bg-[rgba(255,255,255,0.08)] glass hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg border border-[rgba(245,236,215,0.3)] text-[var(--text-primary)] interactive"
+      >
+        {theme === 'light' ? <Moon className="text-maroon w-6 h-6" /> : <Sun className="text-[var(--text-secondary)] w-6 h-6" />}
+      </button>
+
+      {/* Hero Section */}
+      <div className="relative pt-24 pb-12">
+        <motion.div
+           initial={{ opacity: 0, y: -20 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="text-center mb-8"
+        >
+          <span className="font-marathi-display text-[var(--text-secondary)] text-xl tracking-[0.01em] block mb-4 shimmer-text">
+            || श्री गणेशाय नम: ||
+          </span>
+          <div className="inline-block px-6 py-2 border border-[rgba(201,168,76,0.4)] rounded-full text-sm tracking-[0.01em] text-[var(--text-primary)] font-bold uppercase bg-[rgba(201,168,76,0.15)] glass">
+            पाटील परिवार
+          </div>
+        </motion.div>
+
+        <Badge25 />
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center mt-6"
+        >
+          <h1 className="text-5xl md:text-7xl font-marathi-display font-bold text-[var(--text-primary)] mb-2 drop-shadow-sm">
+            रौप्य महोत्सव
+          </h1>
+          <p className="text-2xl md:text-3xl font-serif italic text-[var(--text-secondary)] tracking-widest">निमंत्रण</p>
+        </motion.div>
+      </div>
+
+      {/* Quote Section */}
+      <Section className="px-8">
+        <Divider />
+        <p className="text-xl md:text-2xl font-marathi-display italic leading-relaxed text-[var(--text-body)]">
+          "पती पत्नी मधील एकमेकांवर असणारे प्रेम, एकमेकावर असणारा विश्वास आणि आयुष्यात एकमेकांना दिलेली साथ... म्हणजे त्यांच्या लग्नाचा वाढदिवस, जो की आज आम्ही हा सुखी वैवाहिक जीवनाचा आनंदोत्सव साजरा करत आहोत.."
+        </p>
+        <Divider />
+      </Section>
+
+      {/* Names Section */}
+      <Section id="names-section" className="py-32 md:py-48 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20 relative z-[2]">
+          <div className="relative">
+            <span className={nameStyles}>
+              प्रतिमा
+            </span>
+            <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold origin-left animate-[expandUnderline_1.2s_ease-out_forwards]" />
+          </div>
+
+          <Heart className="w-10 h-10 text-maroon fill-maroon animate-[heartbeat_0.9s_infinite] shadow-lg" />
+
+          <div className="relative">
+            <span className={nameStyles} style={{ animationDelay: '1.25s' }}>
+              हेमंत
+            </span>
+            <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold origin-left animate-[expandUnderline_1.2s_ease-out_forwards]" />
+          </div>
+        </div>
+      </Section>
+
+      {/* Invitation Text */}
+      <Section>
+        <p className="text-xl md:text-2xl font-marathi-display leading-[2] text-[var(--text-body)] px-4">
+          श्री.हेमंत व सौ.प्रतिमा यांच्या 25 व्या लग्नाचा वाढदिवस आम्ही साजरा करत आहोत. 
+          या आमच्या आनंदात सहभागी होण्यासाठी आम्ही आपणास निमंत्रित करीत आहोत. 
+          आमच्या आनंदात सहभागी होवुन आपण आमचा आनंद द्विगुणित करावा हीच नम्र विनंती...
+        </p>
+      </Section>
+
+      {/* Event Details Card */}
+      <Section className="py-16">
+        <div className="glass rounded-[40px] p-10 md:p-14 grid grid-cols-1 md:grid-cols-2 gap-12 text-left border border-white/20 relative overflow-hidden group hover:shadow-2xl transition-shadow duration-500">
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gold/5 rounded-full blur-[120px] pointer-events-none group-hover:bg-gold/10 transition-colors" />
+          
+          <div className="space-y-8 relative z-10">
+            <div className="flex items-start gap-5">
+              <div className="p-4 rounded-2xl bg-gold/10 text-gold shadow-sm border border-gold/20">
+                <Calendar className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">दिनांक</p>
+                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)]">१३/०५/२०२६, बुधवार</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-5">
+              <div className="p-4 rounded-2xl bg-gold/10 text-gold shadow-sm border border-gold/20">
+                <Clock className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">कार्यक्रमाची वेळ</p>
+                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)]">संध्याकाळी ६:०० वा.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-8 relative z-10">
+            <div className="flex items-start gap-5">
+              <div className="p-4 rounded-2xl bg-gold/10 text-gold shadow-sm border border-gold/20">
+                <Utensils className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">जेवणाची वेळ</p>
+                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)]">संध्याकाळी ७:०० वा. ते आपल्या आगमनापर्यंत</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-5">
+              <div className="p-4 rounded-2xl bg-gold/10 text-gold shadow-sm border border-gold/20">
+                <MapPin className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-xs font-serif uppercase tracking-[0.3em] text-[var(--text-secondary)] mb-1">स्थळ</p>
+                <p className="text-xl font-marathi-display font-bold text-[var(--text-primary)] leading-relaxed">
+                  ३०/२, मिलनद्वीप, शास्त्री नगर, जळगाव
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Footer */}
+      <footer className="py-24 md:py-32 text-center px-8 relative overflow-hidden z-10">
+        <div className="max-w-2xl mx-auto space-y-8 relative z-10">
+          <Divider />
+          <h2 className="text-3xl md:text-4xl font-marathi-display font-bold shimmer-text px-4 leading-relaxed text-[var(--text-primary)]">
+            "आपली उपस्थिती हीच आमच्यासाठी सर्वात मोठी भेट आहे."
+          </h2>
+          <p className="text-2xl font-marathi-display text-[var(--text-secondary)] font-bold italic tracking-wide">
+            आपल्या शुभ आशीर्वादाची सदैव अपेक्षा !
+          </p>
+          <div className="pt-12 opacity-30 flex justify-center gap-12">
+             <div className="floral-accent scale-110" />
+             <div className="floral-accent scale-110 rotate-180" />
+          </div>
+        </div>
+
+        {/* Decorative subtle border corners */}
+        <div className="absolute top-0 left-0 w-48 h-48 border-t-2 border-l-2 border-gold/10 rounded-tl-[100px] m-12 hidden md:block" />
+        <div className="absolute bottom-0 right-0 w-48 h-48 border-b-2 border-r-2 border-gold/10 rounded-br-[100px] m-12 hidden md:block" />
+      </footer>
+
+      {/* Extra spacing */}
+      <div className="h-24" />
+    </div>
+  );
+}
+
