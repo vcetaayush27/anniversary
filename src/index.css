@@ -420,4 +420,25 @@ body.dark-mode::before {
     radial-gradient(ellipse at 80% 20%, rgba(192,192,192,0.12) 0%, transparent 60%);
 }
 
+/* Countdown Timer Styles */
+@keyframes countPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes countGlow {
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(201,168,76,0.3)); }
+  50% { filter: drop-shadow(0 0 15px rgba(201,168,76,0.6)); }
+}
+
+.countdown-number {
+  animation: countGlow 2s ease-in-out infinite;
+}
+
+.countdown-card {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
+
 
