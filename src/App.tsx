@@ -2,15 +2,11 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-
 import { useState, useEffect, ReactNode, useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'motion/react';
-import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart, Languages } from 'lucide-react';
-
+import { Sun, Moon, Calendar, Clock, MapPin, Utensils, Heart, Languages, X } from 'lucide-react';
 // --- Types & Constants ---
-
 type Language = 'mr' | 'en';
-
 const TRANSLATIONS = {
   mr: {
     invocation: "|| श्री गणेशाय नम: ||",
@@ -34,6 +30,8 @@ const TRANSLATIONS = {
     valVenue: "३०/२, मिलनद्वीप, शास्त्री नगर, जळगाव",
     footerMessage: "\"आपली उपस्थिती हीच आमच्यासाठी सर्वात मोठी भेट आहे.\"",
     footerBlessings: "आपल्या शुभ आशीर्वादाची सदैव अपेक्षा !",
+    warmInvitation: "सप्रेम निमंत्रक:",
+    inviters: "विजय पाटील आणि आयुष पाटील",
   },
   en: {
     invocation: "|| Shree Ganeshay Namah ||",
@@ -54,12 +52,13 @@ const TRANSLATIONS = {
     valDate: "13/05/2026, Wednesday",
     valTime: "6:00 PM Onwards",
     valFood: "7:00 PM until your arrival",
-    valVenue: "30/2, Milandweep, Shastri Nagar, Jalgaon",
+    valVenue: "30/2, Milandeep, Shastri Nagar, Jalgaon",
     footerMessage: "\"Your presence is the greatest gift for us.\"",
     footerBlessings: "Looking forward to your blessings always!",
+    warmInvitation: "Warmly Invited By:",
+    inviters: "Vijay Patil & Aayush Patil",
   }
 };
-
 interface HeartData {
   id: number;
   left: string;
@@ -70,7 +69,6 @@ interface HeartData {
   delay: string;
   blur: string;
 }
-
 interface OrbData {
   id: number;
   size: string;
@@ -82,7 +80,6 @@ interface OrbData {
   x: string;
   y: string;
 }
-
 interface StarData {
   id: number;
   left: string;
@@ -91,7 +88,6 @@ interface StarData {
   duration: string;
   color: string;
 }
-
 const HEART_COLORS = [
   '#C9A84C', // antique gold
   '#E8C96A', // champagne gold
@@ -104,7 +100,6 @@ const HEART_COLORS = [
   '#FF6B9D', // romantic pink
   '#B8860B', // dark goldenrod
 ];
-
 const ORB_CONFIG = [
   { size: '320px', color: 'rgba(160,51,90,0.18)',  top: '10%',  left: '5%'  },
   { size: '280px', color: 'rgba(123,45,139,0.14)', top: '60%',  left: '75%' },
@@ -113,16 +108,12 @@ const ORB_CONFIG = [
   { size: '180px', color: 'rgba(184,134,11,0.10)', top: '45%',  left: '45%' },
   { size: '260px', color: 'rgba(255,107,157,0.12)',top: '5%',   left: '50%' },
 ];
-
 // --- Components ---
-
 const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
   const [hearts, setHearts] = useState<HeartData[]>([]);
   const [stars, setStars] = useState<StarData[]>([]);
   const [orbs, setOrbs] = useState<OrbData[]>([]);
-
   useEffect(() => {
-    // Generate Hearts
     const newHearts = Array.from({ length: 20 }).map((_, i) => {
       const topPos = Math.random() * 100;
       const isDepthLayer = topPos < 30;
@@ -133,13 +124,11 @@ const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
         color: HEART_COLORS[Math.floor(Math.random() * HEART_COLORS.length)],
         opacity: isDepthLayer ? 0.1 + Math.random() * 0.15 : 0.15 + Math.random() * 0.4,
         duration: `${7 + Math.random() * 11}s`,
-        delay: `${-Math.random() * 12}s`, // Negative delay for staggered start
+        delay: `${-Math.random() * 12}s`,
         blur: Math.random() > 0.7 ? `${Math.random() * 1.5}px` : '0px',
       };
     });
     setHearts(newHearts);
-
-    // Generate Orbs
     const newOrbs = ORB_CONFIG.map((conf, i) => ({
       id: i,
       ...conf,
@@ -149,8 +138,6 @@ const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
       y: `${(Math.random() - 0.5) * 80}px`,
     }));
     setOrbs(newOrbs);
-
-    // Generate Stars (Dark Mode Only)
     if (theme === 'dark') {
       const newStars = Array.from({ length: 60 }).map((_, i) => {
         const isColored = Math.random() > 0.85;
@@ -168,10 +155,8 @@ const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
       setStars([]);
     }
   }, [theme]);
-
   return (
     <div className="fixed inset-0 pointer-events-none z-[-2] overflow-hidden">
-      {/* Background orbs */}
       {orbs.map((o) => (
         <div
           key={o.id}
@@ -189,7 +174,6 @@ const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
           } as any}
         />
       ))}
-
       {stars.map((s) => (
         <div
           key={s.id}
@@ -204,7 +188,6 @@ const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
           }}
         />
       ))}
-
       {hearts.map((h) => (
         <div
           key={h.id}
@@ -221,7 +204,6 @@ const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
         />
       ))}
       
-      {/* Corner Accents */}
       <div className="floral-corner top-0 left-0">
         <div className="flower-circle w-20 h-20 top-0 left-0" />
         <div className="flower-circle w-14 h-14 top-10 left-10 opacity-60" />
@@ -238,26 +220,21 @@ const BackgroundLayers = ({ theme }: { theme: 'light' | 'dark' }) => {
     </div>
   );
 };
-
 const CustomCursor = () => {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(null);
   const mousePos = useRef({ x: 0, y: 0 });
   const ringPos = useRef({ x: 0, y: 0 });
-
   useEffect(() => {
     const isMobile = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     if (isMobile) return;
-
     const onMouseMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
       if (dotRef.current) {
         dotRef.current.style.left = `${e.clientX}px`;
         dotRef.current.style.top = `${e.clientY}px`;
       }
-
-      // Heart trails
       if (Math.random() > 0.85) {
         const heart = document.createElement('div');
         heart.innerHTML = '♥';
@@ -268,28 +245,23 @@ const CustomCursor = () => {
         setTimeout(() => heart.remove(), 800);
       }
     };
-
     const animate = () => {
       const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
       ringPos.current.x = lerp(ringPos.current.x, mousePos.current.x, 0.12);
       ringPos.current.y = lerp(ringPos.current.y, mousePos.current.y, 0.12);
-
       if (ringRef.current) {
         ringRef.current.style.left = `${ringPos.current.x}px`;
         ringRef.current.style.top = `${ringPos.current.y}px`;
       }
       requestRef.current = requestAnimationFrame(animate);
     };
-
     window.addEventListener('mousemove', onMouseMove);
     requestRef.current = requestAnimationFrame(animate);
-
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
   }, []);
-
   return (
     <>
       <div id="cursor-dot" ref={dotRef} className="hidden hover-pointer:block" />
@@ -297,7 +269,6 @@ const CustomCursor = () => {
     </>
   );
 };
-
 const ScrollProgress = () => {
   const { scrollYProgress } = useScroll();
   const width = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
@@ -308,42 +279,32 @@ const ScrollProgress = () => {
     />
   );
 };
-
 const Badge25 = ({ lang }: { lang: Language }) => {
   const [isFilled, setIsFilled] = useState(false);
   const [isRibbonVisible, setIsRibbonVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const textPathRef = useRef<SVGTextElement>(null);
-
   const t = TRANSLATIONS[lang];
-
   useEffect(() => {
     const timerFill = setTimeout(() => setIsFilled(true), 2500);
     const timerRibbon = setTimeout(() => setIsRibbonVisible(true), 3300);
-
     if (textPathRef.current) {
       const length = textPathRef.current.getComputedTextLength();
       textPathRef.current.style.strokeDasharray = `${length}`;
       textPathRef.current.style.strokeDashoffset = `${length}`;
-      
-      // Force reflow
       textPathRef.current.getBoundingClientRect();
-      
       textPathRef.current.style.transition = 'stroke-dashoffset 2.5s ease-in-out';
       textPathRef.current.style.strokeDashoffset = '0';
     }
-
     return () => {
       clearTimeout(timerFill);
       clearTimeout(timerRibbon);
     };
   }, []);
-
   const sparkles = Array.from({ length: 8 }).map((_, i) => ({
     delay: `${i * 0.22}s`,
     angle: i * 45,
   }));
-
   return (
     <div 
       className="relative flex flex-col items-center mb-24 interactive"
@@ -352,7 +313,6 @@ const Badge25 = ({ lang }: { lang: Language }) => {
       onTouchStart={() => setIsHovered(true)}
       onTouchEnd={() => setIsHovered(false)}
     >
-      {/* Tooltip */}
       <AnimatePresence mode="wait">
         {isHovered && (
           <motion.div
@@ -365,39 +325,25 @@ const Badge25 = ({ lang }: { lang: Language }) => {
           </motion.div>
         )}
       </AnimatePresence>
-
       <motion.div
         animate={{ scale: isHovered ? 1.12 : 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 20, mass: 1 }}
         className="relative w-[clamp(260px,40vw,380px)] aspect-square flex items-center justify-center"
       >
-        {/* Ring 1 (outermost) */}
         <div className="absolute inset-0 border-[1.5px] border-gold/50 rounded-full" />
-        
-        {/* Ring 2 */}
         <div className="absolute inset-[10px] border-[0.5px] border-silver/30 rounded-full" />
-        
-        {/* Ring 3 (animated) */}
         <div 
           className="absolute inset-[18px] border-[1.5px] border-transparent border-t-gold border-r-gold rounded-full"
           style={{ 
             animation: `spinRing ${isHovered ? '2s' : '8s'} linear infinite`
           }}
         />
-        
-        {/* Ring 4 (innermost) */}
         <div className="absolute inset-[28px] border-[1px] border-gold/25 rounded-full" />
-
-        {/* Inner Fill Background */}
         <div className="absolute inset-[29px] rounded-full" style={{ background: 'var(--badge-bg)' }} />
-
-        {/* Wedding Rings (UPSIDE) */}
         <div className="absolute top-1/4 flex justify-center z-20 pointer-events-none">
           <div className="w-8 h-8 rounded-full border-4 border-gold shadow-lg animate-[ringGlow_2s_ease-in-out_infinite_alternate]" />
           <div className="w-8 h-8 rounded-full border-4 border-silver shadow-lg -ml-[14px] animate-[ringGlow_2s_ease-in-out_infinite_alternate_0.5s]" />
         </div>
-
-        {/* 25 SVG Numeral */}
         <svg 
           viewBox="0 0 200 200" 
           className="w-4/5 h-4/5 z-10 filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
@@ -428,8 +374,6 @@ const Badge25 = ({ lang }: { lang: Language }) => {
             {t.years}
           </text>
         </svg>
-
-        {/* Sparkle Stars */}
         {sparkles.map((s, i) => (
           <div 
             key={i}
@@ -443,8 +387,6 @@ const Badge25 = ({ lang }: { lang: Language }) => {
           />
         ))}
       </motion.div>
-
-      {/* Ribbon Banner */}
       <motion.div
         animate={{ opacity: isRibbonVisible ? 1 : 0 }}
         transition={{ duration: 0.6 }}
@@ -460,7 +402,6 @@ const Badge25 = ({ lang }: { lang: Language }) => {
     </div>
   );
 };
-
 const Section = ({ children, className = "", parallax = 0.4, id }: { children: ReactNode; className?: string; parallax?: number; id?: string }) => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -470,7 +411,6 @@ const Section = ({ children, className = "", parallax = 0.4, id }: { children: R
   
   const y = useTransform(scrollYProgress, [0, 1], [0, parallax * 200]);
   const springY = useSpring(y, { stiffness: 100, damping: 30 });
-
   return (
     <motion.section
       id={id}
@@ -487,7 +427,6 @@ const Section = ({ children, className = "", parallax = 0.4, id }: { children: R
     </motion.section>
   );
 };
-
 const Divider = () => (
   <div className="flex items-center justify-center gap-4 my-8 opacity-40">
     <div className="h-[1px] w-20 bg-gold" />
@@ -495,15 +434,12 @@ const Divider = () => (
     <div className="h-[1px] w-20 bg-gold" />
   </div>
 );
-
 // --- Main App ---
-
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [lang, setLang] = useState<Language>('mr');
-
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const t = TRANSLATIONS[lang];
-
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'dark';
     const savedLang = localStorage.getItem('lang') as Language || 'mr';
@@ -511,8 +447,6 @@ export default function App() {
     setLang(savedLang);
     document.body.classList.add(savedTheme === 'dark' ? 'dark-mode' : 'light-mode');
     document.body.classList.remove(savedTheme === 'dark' ? 'light-mode' : 'dark-mode');
-
-    // Touch ripple handler
     const onTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
       const ripple = document.createElement('div');
@@ -522,16 +456,12 @@ export default function App() {
       document.body.appendChild(ripple);
       setTimeout(() => ripple.remove(), 600);
     };
-
     window.addEventListener('touchstart', onTouchStart);
     return () => window.removeEventListener('touchstart', onTouchStart);
   }, []);
-
-  // Couple Background Image Scroll & Theme Logic
   useEffect(() => {
     const coupleImg = document.getElementById('couple-bg-img') as HTMLImageElement;
     if (!coupleImg) return;
-
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const docHeight = document.body.scrollHeight - window.innerHeight;
@@ -540,7 +470,6 @@ export default function App() {
       
       const maxOpacity = isLight ? 0.18 : 0.28;
       let targetOpacity = 0;
-
       if (progress < 0.08) {
         targetOpacity = 0;
       } else if (progress < 0.25) {
@@ -552,10 +481,8 @@ export default function App() {
       } else {
         targetOpacity = 0;
       }
-
       coupleImg.style.opacity = targetOpacity.toString();
     };
-
     const updateFilter = () => {
       const isDark = document.body.classList.contains('dark-mode');
       if (isDark) {
@@ -566,17 +493,11 @@ export default function App() {
         coupleImg.style.mixBlendMode = 'multiply';
       }
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
-    updateFilter(); // Initial state
-    
-    // Watch for theme changes via a simple polling or event if possible, 
-    // but we can also just rely on toggleTheme calling a function.
-    // For now, let's just run it whenever theme state changes by adding theme to dependency.
+    updateFilter();
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, [theme]);
-
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
@@ -584,15 +505,12 @@ export default function App() {
     document.body.classList.add(newTheme === 'dark' ? 'dark-mode' : 'light-mode');
     document.body.classList.remove(newTheme === 'dark' ? 'light-mode' : 'dark-mode');
   };
-
   const toggleLang = () => {
     const newLang = lang === 'mr' ? 'en' : 'mr';
     setLang(newLang);
     localStorage.setItem('lang', newLang);
   };
-
   const nameStyles = `text-[clamp(2.8rem,7vw,5rem)] ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold name-gradient relative inline-block animate-[floatName_2.5s_ease-in-out_infinite_alternate] transition-transform duration-400 hover:scale-[1.08] cursor-none interactive`;
-
   return (
     <div className="min-h-screen relative overflow-x-hidden">
       <img 
@@ -600,9 +518,7 @@ export default function App() {
         src="https://drive.google.com/uc?export=view&id=11dGQ0qZqMLGFmgYB4ahp2tI3A3puZneI"
         alt=""
         crossOrigin="anonymous"
-        onLoad={() => {
-          // Additional safety if needed
-        }}
+        onLoad={() => {}}
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = 'none';
         }}
@@ -618,7 +534,6 @@ export default function App() {
       >
         {theme === 'light' ? <Moon className="text-maroon w-6 h-6" /> : <Sun className="text-[var(--text-secondary)] w-6 h-6" />}
       </button>
-
       <button
         onClick={toggleLang}
         aria-label="Toggle language"
@@ -627,8 +542,6 @@ export default function App() {
         <Languages className="w-4 h-4 text-gold" />
         {lang === 'mr' ? 'ENGLISH' : 'मराठी'}
       </button>
-
-      {/* Hero Section */}
       <div className="relative pt-24 pb-12">
         <motion.div
            initial={{ opacity: 0, y: -20 }}
@@ -642,9 +555,7 @@ export default function App() {
             {t.family}
           </div>
         </motion.div>
-
         <Badge25 lang={lang} />
-
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -657,8 +568,6 @@ export default function App() {
           <p className="text-2xl md:text-3xl font-serif italic text-[var(--text-secondary)] tracking-widest">{t.invitationSubtitle}</p>
         </motion.div>
       </div>
-
-      {/* Quote Section */}
       <Section className="px-8">
         <Divider />
         <p className={`text-xl md:text-2xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} italic leading-relaxed text-[var(--text-body)]`}>
@@ -666,8 +575,6 @@ export default function App() {
         </p>
         <Divider />
       </Section>
-
-      {/* Names Section */}
       <Section id="names-section" className="py-32 md:py-48 relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20 relative z-[2]">
           <div className="relative">
@@ -676,9 +583,7 @@ export default function App() {
             </span>
             <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold origin-left animate-[expandUnderline_1.2s_ease-out_forwards]" />
           </div>
-
           <Heart className="w-12 h-12 flex-shrink-0 text-[var(--text-accent)] fill-[var(--text-accent)] animate-[heartbeat_0.9s_infinite] drop-shadow-[0_0_12px_rgba(255,155,181,0.4)] interactive" />
-
           <div className="relative">
             <span className={nameStyles} style={{ animationDelay: '1.25s' }}>
               {t.name2}
@@ -687,15 +592,11 @@ export default function App() {
           </div>
         </div>
       </Section>
-
-      {/* Invitation Text */}
       <Section>
         <p className={`text-xl md:text-2xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} leading-[2] text-[var(--text-body)] px-4`}>
           {t.invitationText}
         </p>
       </Section>
-
-      {/* Event Details Card */}
       <Section className="py-16">
         <div className="glass rounded-[40px] p-10 md:p-14 grid grid-cols-1 md:grid-cols-2 gap-12 text-left border border-white/20 relative overflow-hidden group hover:shadow-2xl transition-shadow duration-500">
           <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gold/5 rounded-full blur-[120px] pointer-events-none group-hover:bg-gold/10 transition-colors" />
@@ -710,7 +611,6 @@ export default function App() {
                 <p className={`text-xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold text-[var(--text-primary)]`}>{t.valDate}</p>
               </div>
             </div>
-
             <div className="flex items-start gap-5">
               <div className="p-4 rounded-2xl bg-gold/10 text-gold shadow-sm border border-gold/20">
                 <Clock className="w-7 h-7" />
@@ -721,7 +621,6 @@ export default function App() {
               </div>
             </div>
           </div>
-
           <div className="space-y-8 relative z-10">
             <div className="flex items-start gap-5">
               <div className="p-4 rounded-2xl bg-gold/10 text-gold shadow-sm border border-gold/20">
@@ -732,7 +631,6 @@ export default function App() {
                 <p className={`text-xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold text-[var(--text-primary)]`}>{t.valFood}</p>
               </div>
             </div>
-
             <div className="flex items-start gap-5">
               <div className="p-4 rounded-2xl bg-gold/10 text-gold shadow-sm border border-gold/20">
                 <MapPin className="w-7 h-7" />
@@ -747,8 +645,6 @@ export default function App() {
           </div>
         </div>
       </Section>
-
-      {/* Footer */}
       <footer className="py-24 md:py-32 text-center px-8 relative overflow-hidden z-10">
         <div className="max-w-2xl mx-auto space-y-8 relative z-10">
           <Divider />
@@ -758,19 +654,64 @@ export default function App() {
           <p className={`text-2xl ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} text-[var(--text-secondary)] font-bold italic tracking-wide`}>
             {t.footerBlessings}
           </p>
+          
+          <div className="pt-16 pb-8">
+            <div className={`text-sm tracking-[0.2em] font-serif uppercase text-[var(--text-muted)] mb-3 ${lang === 'mr' ? 'font-marathi-display tracking-normal' : ''}`}>
+              {t.warmInvitation}
+            </div>
+            <div className={`text-3xl ${lang === 'mr' ? 'font-marathi-display' : 'font-cursive text-4xl'} text-[var(--text-primary)] name-gradient inline-block`}>
+              {t.inviters}
+            </div>
+          </div>
+          <motion.button
+            onClick={() => setShowInviteModal(true)}
+            className={`mt-8 px-8 py-3 rounded-full bg-gold/20 hover:bg-gold/30 border border-gold/40 text-[var(--text-primary)] font-bold text-lg tracking-wide glass interactive ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'}`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {lang === 'mr' ? 'निमंत्रण - इथे क्लिक करा' : 'Invitation - Click Here'}
+          </motion.button>
           <div className="pt-12 opacity-30 flex justify-center gap-12">
              <div className="floral-accent scale-110" />
              <div className="floral-accent scale-110 rotate-180" />
           </div>
         </div>
-
-        {/* Decorative subtle border corners */}
         <div className="absolute top-0 left-0 w-48 h-48 border-t-2 border-l-2 border-gold/10 rounded-tl-[100px] m-12 hidden md:block" />
         <div className="absolute bottom-0 right-0 w-48 h-48 border-b-2 border-r-2 border-gold/10 rounded-br-[100px] m-12 hidden md:block" />
       </footer>
-
-      {/* Extra spacing */}
       <div className="h-24" />
+      <AnimatePresence>
+        {showInviteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowInviteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="relative max-w-4xl w-full max-h-[90vh] overflow-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowInviteModal(false)}
+                className="absolute -top-2 -right-2 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white shadow-lg border border-gold/30 text-maroon hover:scale-110 active:scale-95 transition-all duration-300"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <img
+                src="./invite.png"
+                alt="Invitation"
+                className="w-full h-auto rounded-2xl shadow-2xl border-2 border-gold/20"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
