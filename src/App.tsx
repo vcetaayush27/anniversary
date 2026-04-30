@@ -21,8 +21,8 @@ const TRANSLATIONS = {
     jubileeTitle: "रौप्य महोत्सव",
     invitationSubtitle: "निमंत्रण",
     quote: "\"पती पत्नी मधील एकमेकांवर असणारे प्रेम, एकमेकावर असणारा विश्वास आणि आयुष्यात एकमेकांना दिलेली साथ... म्हणजे त्यांच्या लग्नाचा वाढदिवस, जो की आज आम्ही हा सुखी वैवाहिक जीवनाचा आनंदोत्सव साजरा करत आहोत..\"",
-    name1: "सौ.प्रतिमा",
-    name2: "श्री.हेमंत",
+    name1: "सौ. प्रतिमा",
+    name2: "श्री. हेमंत",
     invitationText: "श्री.हेमंत व सौ.प्रतिमा यांच्या 25 व्या लग्नाचा वाढदिवस आम्ही साजरा करत आहोत. या आमच्या आनंदात सहभागी होण्यासाठी आम्ही आपणास निमंत्रित करीत आहोत. आमच्या आनंदात सहभागी होवुन आपण आमचा आनंद द्विगुणित करावा हीच नम्र विनंती...",
     labelDate: "दिनांक",
     labelTime: "कार्यक्रमाची वेळ",
@@ -46,8 +46,8 @@ const TRANSLATIONS = {
     jubileeTitle: "Silver Jubilee",
     invitationSubtitle: "Invitation",
     quote: "\"The love between a husband and wife, the trust in each other, and the support given throughout life... that is their wedding anniversary, which we are celebrating today as a joy of happy married life..\"",
-    name1: "Mrs.Pratima",
-    name2: "Mr.Hemant",
+    name1: "Mrs. Pratima",
+    name2: "Mr. Hemant",
     invitationText: "We are celebrating the 25th wedding anniversary of Mr. Hemant and Mrs. Pratima. We cordially invite you to join us in this celebration. We humbly request you to double our joy by your presence...",
     labelDate: "Date",
     labelTime: "Event Time",
@@ -632,7 +632,7 @@ export default function App() {
     localStorage.setItem('lang', newLang);
   };
 
-  const nameStyles = `text-[clamp(2.8rem,7vw,5rem)] ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold name-gradient relative inline-block animate-[floatName_2.5s_ease-in-out_infinite_alternate] transition-transform duration-400 hover:scale-[1.08] cursor-none interactive`;
+  const nameStyles = `text-[clamp(2rem,5vw,3.5rem)] ${lang === 'mr' ? 'font-marathi-display' : 'font-serif'} font-bold name-gradient relative inline-block transition-transform duration-400 hover:scale-[1.05] cursor-none interactive`;
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
@@ -777,8 +777,8 @@ export default function App() {
       </Section>
 
       {/* Names Section */}
-      <Section id="names-section" className="py-16 md:py-24 relative overflow-hidden">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20 relative z-[2]">
+      <Section id="names-section" className="py-8 md:py-12 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 relative z-[2]">
           <div className="relative">
             <span className={nameStyles}>
               {t.name1}
@@ -786,7 +786,7 @@ export default function App() {
             <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-gold origin-left animate-[expandUnderline_1.2s_ease-out_forwards]" />
           </div>
 
-          <Heart className="w-12 h-12 flex-shrink-0 text-[var(--text-accent)] fill-[var(--text-accent)] animate-[heartbeat_0.9s_infinite] drop-shadow-[0_0_12px_rgba(255,155,181,0.4)] interactive" />
+          <Heart className="w-8 h-8 flex-shrink-0 text-[var(--text-accent)] fill-[var(--text-accent)] animate-[heartbeat_0.9s_infinite] drop-shadow-[0_0_12px_rgba(255,155,181,0.4)] interactive" />
 
           <div className="relative">
             <span className={nameStyles} style={{ animationDelay: '1.25s' }}>
